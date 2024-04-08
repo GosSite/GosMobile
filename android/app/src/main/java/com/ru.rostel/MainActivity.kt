@@ -1,4 +1,4 @@
-package com.gosmobile
+package ru.rostell
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

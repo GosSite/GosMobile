@@ -1,6 +1,6 @@
 {
-  "name": "Госуслуги",
-  "version": "0.0.1",
+  "name": "gosuslugi",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -16,6 +16,7 @@
     "react-native-android-sms-listener": "^0.8.0",
     "react-native-contacts": "^7.0.8",
     "react-native-launcher-kit": "^1.0.4",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^15.1.0"
   },
   "devDependencies": {
