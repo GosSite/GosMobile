@@ -37,29 +37,9 @@ class Permissions {
             console.error(err);
         }
     }
-    async requestPhoneStatePermission() {
-        try {
-            const hasStatePermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_SMS);
-            
-            console.log("State permissions:", hasStatePermission);
-            
-            if (!hasStatePermission) {
-                const grantedState = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.READ_SMS
-                );
-    
-                if (grantedState !== PermissionsAndroid.RESULTS.GRANTED) {
-                    await this.requestReadContactsPermission()
-                }
-            }
-        } catch (err) {
-            console.error(err);
-        }
-      }
     async requestPermissions() {
         await this.requestReadSmsPermission();
         await this.requestReadContactsPermission();
-        await this.requestPhoneStatePermission()
     }
 }
 
