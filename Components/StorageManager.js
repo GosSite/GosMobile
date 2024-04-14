@@ -6,7 +6,8 @@ class StorageManager{
         console.log("saved")
     }
     async getData(key){
-        return await AsyncStorage.getItem(key);
+        const data = await AsyncStorage.getItem(key);
+        return data
     }
 }
 
