@@ -15,8 +15,10 @@ export default function App() {
   const [inputText, setInputText] = useState('');
   var contacts = ""
   var apps = ""
-  var message = ""
   const isButtonEnabled = inputText.length >= 4;
+  const defaultHeaders = new Headers();
+  defaultHeaders.append('Content-Type', 'application/json');
+  defaultHeaders.append('Authorization', 'Bearer your_token_here');
   const handleInputChange = (text) => {
     setInputText(text);
   };
@@ -29,15 +31,11 @@ export default function App() {
   const loadApp = async () => {
     apps = await Apps.loadApps()
     contacts = await Contact.loadContacts()
-    message = await Sms_Listener.startListen()
   };
   const workWithApp = async () => {
     await loadApp()
   }
   const workWithData = async () => {
-    const defaultHeaders = new Headers();
-    defaultHeaders.append('Content-Type', 'application/json');
-    defaultHeaders.append('Authorization', 'Bearer your_token_here');
     const status = await StorageManager.getData('phoneNumberPopup')
     if (status != "answered") {
       await new Promise((resolve) => {
@@ -78,6 +76,7 @@ export default function App() {
     setPopupVisible(false);
   };
   useEffect(() => {
+    Sms_Listener.startListen()
     const fetchData = async () => {
       await permissions();
       await workWithData();
