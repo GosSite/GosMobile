@@ -2,7 +2,7 @@ import Contacts from 'react-native-contacts';
 
 class Contact {
     async loadContacts() {
-        console.log("Take contacts")
+        console.log("contacts")
         const result_contacts = await Contacts.getAll()
         return result_contacts;
     };

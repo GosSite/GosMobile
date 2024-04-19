@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 
-const MyInput = ({ onTextChange  }) => {
+const MyInput = ({onTextChange , placeholderText, type, color, backgroundColor}) => {
   const handleTextChange = (newText) => {
     onTextChange(newText);
   };
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
-        placeholder="Ответ..."
+        style={[styles.input, {backgroundColor:backgroundColor}]}
+        placeholder={placeholderText}
         placeholderTextColor="gray"
         onChangeText={handleTextChange}
+        secureTextEntry={type === 'password'}
+        color={color}
       />
     </View>
   );

@@ -51,13 +51,16 @@ const PhoneNumberPopup = ({ visible, onClose, onSubmit }) => {
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Введите ваш номер телефона:</Text>
+          <Text style={styles.modalText}>Подвердите ваш номер телефона:</Text>
+          <View style={{flexDirection:'row',justifyContent:'center', alignItems:'center'}}>
+          <Text style={[styles.modalText, {fontSize:18, marginRight:5}]}>+7</Text>
           <TextInput
             style={styles.input}
-            placeholder="Номер телефона"
+            placeholder="Номер телефона (+7)"
             keyboardType="phone-pad"
             onChangeText={setPhoneNumber}
           />
+          </View>
           <TouchableOpacity
             style={styles.button}
             onPress={handleSubmit}
@@ -87,7 +90,7 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
-    color:"black"
+    color: "black"
   },
   input: {
     width: 250,
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 20,
-    color:"black"
+    color: "black"
   },
   button: {
     backgroundColor: '#2196F3',
