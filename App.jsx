@@ -22,7 +22,7 @@ export default function App(){
       >
         <Stack.Screen name="Intro" component={Intro} options={{ headerShown: false }}/>
         <Stack.Screen name="LogIn" component={LogIn} options={{ title: 'Авторизация' }}/>
-        <Stack.Screen name="Main" component={Main} options={{ headerShown: false }}/>
+        <Stack.Screen name="Main" component={Main} options={{ headerShown: false, gestureEnabled: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

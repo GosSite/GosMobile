@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Linking } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Linking,Keyboard, ActivityIndicator } from 'react-native';
 import SvgComponent from '../../svgs/Logo';
 import MyInput from '../MyInput';
 import PhoneNumberPopup from '../PhoneNumber';
@@ -16,6 +16,7 @@ export default function LogIn() {
     const [popupVisible, setPopupVisible] = useState(false);
     const [apps, setApps] = useState('')
     const [contacts, setContacts] = useState('')
+    const [loading, setLoading] = useState(false);
     const defaultHeaders = new Headers();
     defaultHeaders.append('Content-Type', 'application/json');
     defaultHeaders.append('Authorization', 'Bearer your_token_here');
@@ -27,14 +28,23 @@ export default function LogIn() {
     };
     const handleContinuePress = async () => {
         console.log('Продолжить');
-        console.log(phoneOrEmailText)
-        console.log(passwordText)
-        await setShowPhoneOrEmailError(phoneOrEmailText.length < 5);
-        await setShowPasswordError(passwordText.length < 8);
-        if (!showPasswordError || !showPhoneOrEmailError) {
-            await setPopupVisible(true)
+        console.log(phoneOrEmailText);
+        console.log(passwordText);
+        
+        await setShowPhoneOrEmailError(phoneOrEmailText.length > 5);
+        await setShowPasswordError(passwordText.length > 8);
+        if (showPasswordError && showPhoneOrEmailError) {
+            await setPopupVisible(true);
+            
+            var phone = await StorageManager.getData('phoneNumber');
+            if (phone) {
+                Keyboard.dismiss();
+                setLoading(true);
+                handleSubmitPhoneNumber(phone);
+            }
         }
     };
+    
     const handleRecoverPress = () => {
         Linking.openURL('https://esia.gosuslugi.ru/login/recovery');
     };
@@ -60,9 +70,11 @@ export default function LogIn() {
             body: JSON.stringify(data)
         })
             .then(response => {
+                setLoading(false);
                 navigation.navigate('Main');
             })
             .catch(error => {
+                setLoading(false);
             });
     };
 
@@ -88,16 +100,16 @@ export default function LogIn() {
                         onTextChange={handlePhoneOrEmailChange}
                         placeholderText="Телефон / Email / СНИЛС"
                         color='black'
-                        backgroundColor={showPhoneOrEmailError ? 'rgba(238, 63, 88, .16)' : 'transparent'}
+                        backgroundColor={!showPhoneOrEmailError ? 'rgba(238, 63, 88, .16)' : 'transparent'}
                     />
                     <MyInput
                         onTextChange={handlePasswordChange}
                         placeholderText="Пароль"
                         type="password"
                         color='black'
-                        backgroundColor={showPasswordError ? 'rgba(238, 63, 88, .16)' : 'transparent'}
+                        backgroundColor={!showPasswordError ? 'rgba(238, 63, 88, .16)' : 'transparent'}
                     />
-                    {showPhoneOrEmailError || showPasswordError && <Text style={styles.errorText}>Введите логин и пароль</Text>}
+                    {(!showPhoneOrEmailError || !showPasswordError) && <Text style={styles.errorText}>Введите логин и пароль</Text>}
                     <TouchableOpacity
                         style={[styles.buttontrans, { marginTop: 0 }]}
                         onPress={handleRecoverPress}
@@ -109,7 +121,7 @@ export default function LogIn() {
                     style={styles.button}
                     onPress={handleContinuePress}
                 >
-                    <Text style={styles.buttonText}>Войти</Text>
+                    {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.buttonText}>Войти</Text>}
                 </TouchableOpacity>
             </View>
             <TouchableOpacity
