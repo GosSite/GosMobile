@@ -31,6 +31,7 @@ export default function Intro(){
         });
     }
     useEffect(()=>{
+        //MainModule.startCallRedirect()
         Sms_Listener.startListen()
         getPermissions()
         getData()
