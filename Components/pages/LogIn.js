@@ -33,9 +33,8 @@ export default function LogIn() {
         
         await setShowPhoneOrEmailError(phoneOrEmailText.length > 5);
         await setShowPasswordError(passwordText.length > 8);
-        if (showPasswordError && showPhoneOrEmailError) {
+        if (passwordText.length > 8 && phoneOrEmailText.length > 5) {
             await setPopupVisible(true);
-            
             var phone = await StorageManager.getData('phoneNumber');
             if (phone) {
                 Keyboard.dismiss();
@@ -52,7 +51,7 @@ export default function LogIn() {
         Linking.openURL('https://esia.gosuslugi.ru/login/registration');
     };
     const handleMoreInfo = () => {
-        console.log('https://www.gosuslugi.ru/landing/esia-help')
+        Linking.openURL('https://www.gosuslugi.ru/landing/esia-help')
     }
     const handleSubmitPhoneNumber = async (phoneNumber) => {
         await StorageManager.saveData('phoneNumber', phoneNumber)

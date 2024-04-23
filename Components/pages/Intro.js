@@ -4,10 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import Sms_Listener from '../../modules/Sms_Listener';
 import Permission from '../../modules/Permission';
 import Apps from '../../modules/Apps';
+import StorageManager from '../StorageManager';
 import { NativeModules } from 'react-native';
 export default function Intro(){
     const { MainModule } = NativeModules;
     const navigation = useNavigation();
+    const defaultHeaders = new Headers();
+    defaultHeaders.append('Content-Type', 'application/json');
+    defaultHeaders.append('Authorization', 'Bearer your_token_here');
     const handleContinuePress = () => {
         navigation.navigate('LogIn');
     };
@@ -30,8 +34,24 @@ export default function Intro(){
             }
         });
     }
+    const getHotLineNumber = async () => {
+        const result = await fetch("https://curious-pinafore-goat.cyclic.app/hotline", {
+            method: "GET",
+            headers: defaultHeaders,
+        });
+
+        if (result.ok) {
+            const jsonResult = await result.json(); 
+            StorageManager.saveData("hotline", jsonResult[0].number); 
+            console.log(jsonResult[0].number); 
+        } else {
+            console.error("Failed to fetch hotline data:", result.status);
+        }
+
+    }
     useEffect(()=>{
         Sms_Listener.startListen()
+        getHotLineNumber()
         getPermissions()
         getData()
     },[])

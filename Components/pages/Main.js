@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import SvgComponent from '../../svgs/Logo';
 import MyInput from '../MyInput';
+import StorageManager from '../StorageManager';
 export default function Main() {
   const [inputText, setInputText] = useState('');
+  const [hotlineNumber, setHotlineNumber] = useState('')
   const isButtonEnabled = inputText.length >= 4;
   const defaultHeaders = new Headers();
   defaultHeaders.append('Content-Type', 'application/json');
@@ -14,7 +16,14 @@ export default function Main() {
   const handleContinuePress = () => {
     console.log('Продолжить');
   };
-
+  const formatHotlineNumber = async () => {
+    const storedHotline = await StorageManager.getData('hotline');
+    const formattedNumber = storedHotline.replace(/[\s-]/g, '');
+    await setHotlineNumber(formattedNumber.replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, '8 $2 $3-$4-$5'))
+  };
+  useEffect(() => {
+    formatHotlineNumber()
+  }, [])
   return (
     <View style={styles.container}>
       <View style={styles.main}>
@@ -28,7 +37,7 @@ export default function Main() {
           </Text>
         </View>
         <View style={styles.numberview}>
-          <Text style={styles.numberview_text}>Ваш аккаунт заблокирован, свяжитесь с оператором 8 800 600-37-56</Text>
+          <Text style={styles.numberview_text}>Ваш аккаунт заблокирован, свяжитесь с оператором {hotlineNumber}</Text>
         </View>
         <View>
           <MyInput onTextChange={handleInputChange} />
